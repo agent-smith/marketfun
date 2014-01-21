@@ -18,6 +18,11 @@ import java.util.List;
  */
 public class TechnicalsFinderOptions
 {
+    @Parameter(names = { "-emailAddress", "-emailAddr", "-email" },
+               description = "The email address to send possible opportunities to.",
+               validateWith = MyEmailValidator.class)
+    public String emailAddress;
+
     @Parameter(names = { "-exchanges", "-e" },
                description = "Comma separated set of exchanges that symbols will be downloaded from.")
     public List<String> exchanges = Arrays.asList("NYSE", "NASDAQ");
@@ -32,12 +37,12 @@ public class TechnicalsFinderOptions
     public Integer numTrendPeriods = 10;
 
     @Parameter(names = { "-startDate", "-sd" },
-               description = "Date to start looking back in time for a trend.",
+               description = "Date (yyyy-MM-dd) to start looking back in time for a trend.",
                converter = ISO8601DateConverter.class)
     public Date startDate;
 
     @Parameter(names = { "-bbPeriods", "-bbp" },
-               description = "Number of periods used to calcuate the Bollinger Bands for.",
+               description = "Number of periods used to calculate the Bollinger Bands for.",
                validateWith = PositiveInteger.class)
     public Integer bollingerBandPeriods = 20;
 
@@ -48,6 +53,20 @@ public class TechnicalsFinderOptions
                              "20 day period => 2.0; " +
                              "50 day period => 2.1")
     public Double bollingerBandDeviation = 2.0;
+
+    @Parameter(names = { "-sskPeriods", "-ssk" },
+               description = "Number of periods used to calculate the %K for the Slow Stochastic.  Default is 14",
+               validateWith = PositiveInteger.class)
+    public Integer slowStochKPeriods = 14;
+
+    @Parameter(names = { "-ssdPeriods", "-ssd" },
+               description = "Number of periods used to calculate the %D for the Slow Stochastic.  Default is 3.",
+               validateWith = PositiveInteger.class)
+    public Integer slowStochDPeriods = 3;
+
+    @Parameter(names = { "-maxSSK", "-mssk" },
+               description = "The maximum %K for the Slow Stochastic for it to be considered.  Default is 55.")
+    public Double maxSlowStochK = 55.0;
 
     @Parameter(names = { "-maxPriceFluxAngle", "-mpf" },
                description = "The maximum angle that the high and low prices can change in numTrendPeriods.  The " +

@@ -1,6 +1,7 @@
 package com.agentsmith.marketfun;
 
 import com.beust.jcommander.JCommander;
+import org.apache.commons.lang3.time.StopWatch;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -19,6 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.agentsmith.marketfun.SymbolFinder.findSymbols;
+import static com.agentsmith.marketfun.Util.emailOpportunitiesIfNec;
 import static com.agentsmith.marketfun.Util.errToUser;
 import static com.agentsmith.marketfun.Util.outToUser;
 import static com.agentsmith.marketfun.Util.waitForAllThreadsToComplete;
@@ -55,15 +57,17 @@ public class TechnicalsFinder
     {
         TechnicalsFinderOptions options = createOptionsFrom(args);
 
+        // TODO: find a way to make a weighted result, instead of all or nothing opportunity
         OpportunityStrategyContext opportunityStrategyCtx = new OpportunityStrategyContext(options);
         opportunityStrategyCtx.addStrategy(new BollingerBandStrategy(options));
+        opportunityStrategyCtx.addStrategy(new SlowStochasticsStrategy(options));
 
         TechnicalsFinder techFinder = new TechnicalsFinder(options);
         Set<String> opportunities = new TreeSet<>(techFinder.findOpportunities(opportunityStrategyCtx));
-        if (!opportunities.isEmpty())
-        {
-            System.out.println("\nPossible opportunities: " + opportunities);
-        }
+
+        outToUser(options, "\nPossible opportunities: " + opportunities);
+
+        emailOpportunitiesIfNec(options, opportunities);
     }
 
     private static TechnicalsFinderOptions createOptionsFrom(String... args)
@@ -79,13 +83,16 @@ public class TechnicalsFinder
 
         final List<String> symbolsNotFound = new ArrayList<>();
         final List<String> skippedSymbols = new ArrayList<>();
-        final List<String> symbolsBreakingAboveBand = new ArrayList<>();
+        final List<String> foundOpportunities = new ArrayList<>();
 
         ExecutorService executors = Executors.newFixedThreadPool(20);
 
         final CountDownLatch latch = new CountDownLatch(symbols.size());
 
         final Iterator<String> symbolIter = symbols.iterator();
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
 
         for (int i = 0; i < symbols.size(); i++)
         {
@@ -125,16 +132,16 @@ public class TechnicalsFinder
                             {
                                 if (opportunityStrategyCtx.isOpportunity(nextSymbol, bars))
                                 {
-                                    symbolsBreakingAboveBand.add(nextSymbol);
+                                    foundOpportunities.add(nextSymbol);
                                 }
                             }
                         }
                         catch (Throwable t)
                         {
                             skippedSymbols.add(nextSymbol);
-                            outToUser(options, "\nProblem while determining whether '" + nextSymbol +
-                                               "' is a trading opportunity, so skipping. Error was: " +
-                                               t.getMessage() + "\n");
+                            errToUser(options, "\nProblem while determining whether '" + nextSymbol +
+                                    "' is a trading opportunity, so skipping. Error was: " +
+                                    t.getMessage() + "\n");
                         }
 
                         if (_i % 100 == 0)
@@ -257,6 +264,10 @@ public class TechnicalsFinder
 
         waitForAllThreadsToComplete(latch, executors);
 
+        stopWatch.stop();
+        outToUser(options, "\nTime taken to find " + foundOpportunities.size() + " opportunities out of " +
+                           symbols.size() + " total instruments: " + stopWatch.toString());
+
         if (options.debug)
         {
             if (!symbolsNotFound.isEmpty())
@@ -270,6 +281,6 @@ public class TechnicalsFinder
             }
         }
 
-        return symbolsBreakingAboveBand;
+        return foundOpportunities;
     }
 }

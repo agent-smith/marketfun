@@ -1,11 +1,21 @@
 package com.agentsmith.marketfun;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
 import static com.agentsmith.marketfun.Calc.calcAngleOfLineBetweenTwoPoints;
 import static java.lang.Math.abs;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * Utility methods.
@@ -92,6 +102,49 @@ public class Util
         finally
         {
             executors.shutdown();
+        }
+    }
+
+    public static void emailOpportunitiesIfNec(TechnicalsFinderOptions options, Set<String> opportunities)
+    {
+        if (isNotBlank(options.emailAddress))
+        {
+            String toEmail = options.emailAddress;
+
+            Properties props = new Properties();
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.host", "smtp.gmail.com");
+            props.put("mail.smtp.port", "587");
+
+            Session session = Session.getInstance(
+                    props,
+                    new javax.mail.Authenticator() {
+                        protected PasswordAuthentication getPasswordAuthentication()
+                        {
+                            return new PasswordAuthentication("tom.a.anderson.neo@gmail.com", "poker123");
+                        }
+                    });
+
+            try
+            {
+                Message message = new MimeMessage(session);
+                message.setFrom(new InternetAddress("randy31415@gmail.com"));
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+                message.setSubject("Stock Picks");
+                message.setText("\nPossible opportunities: " + opportunities);
+
+                outToUser(options, "Trying to send email to: " + toEmail + "...");
+
+                Transport.send(message);
+
+                outToUser(options, "Done sending email to: " + toEmail);
+
+            }
+            catch (MessagingException e)
+            {
+                throw new RuntimeException(e);
+            }
         }
     }
 

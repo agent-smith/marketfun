@@ -56,7 +56,7 @@ public class SymbolFinder
 
             symbols = SymbolFinder.findAllSymbols(options.exchanges.toArray(new String[options.exchanges.size()]));
 
-            outToUser(options, "Finished downloading all symbols.");
+            outToUser(options, "Finished downloading " + symbols.size() + " symbols.");
         }
 
         return symbols;

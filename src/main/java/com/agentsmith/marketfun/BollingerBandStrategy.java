@@ -19,7 +19,7 @@ import static com.agentsmith.marketfun.Util.outToUser;
  */
 public class BollingerBandStrategy implements OpportunityStrategy
 {
-    private TechnicalsFinderOptions options;
+    private final TechnicalsFinderOptions options;
 
     public BollingerBandStrategy(TechnicalsFinderOptions options)
     {

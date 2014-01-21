@@ -55,4 +55,25 @@ public class Calc
 
         return Math.sqrt(sumCloseMinusMvgAvgSquared / bars.size());
     }
+
+    public static double findHighestHigh(List<Bar> bars)
+    {
+        double maxHigh = Integer.MIN_VALUE;
+        for (Bar nextBar : bars)
+        {
+            maxHigh = Math.max(maxHigh, nextBar.high);
+        }
+        return maxHigh;
+    }
+
+    public static double findLowestLow(List<Bar> bars)
+    {
+        double lowestLow = Integer.MAX_VALUE;
+        for (Bar nextBar : bars)
+        {
+            lowestLow = Math.min(lowestLow, nextBar.low);
+        }
+        return lowestLow;
+    }
+
 }
