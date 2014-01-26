@@ -1,13 +1,15 @@
 package com.agentsmith.marketfun;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * // TODO: impl me!
+ * A bar represents the interesting information relative for one instrument for an entire day.
  * <p/>
  * User: rmarquez
- * Date: 11/24/13
- * Time: 5:35 PM
+ * Date: 11/24/2013
+ * Time: 17:35
  */
 public class Bar
 {
@@ -22,6 +24,12 @@ public class Bar
     public double upperBollingerBand = -1.0;
     public double middleBollingerBand = -1.0;
     public double lowerBollingerBand = -1.0;
+
+    // Key = nDays, Value = SMA (e.g. get the 10-day SMA from SMAs.get(10))
+    public Map<Integer, Double> SMAs = new HashMap<>();
+
+    // Key = nDays, Value = EMA (e.g. get the 10-day EMA from EMAs.get(10))
+    public Map<Integer, Double> EMAs = new HashMap<>();
 
     public Bar(String symbol,
                Date date,
@@ -103,6 +111,14 @@ public class Bar
         {
             return false;
         }
+        if (EMAs != null ? !EMAs.equals(bar.EMAs) : bar.EMAs != null)
+        {
+            return false;
+        }
+        if (SMAs != null ? !SMAs.equals(bar.SMAs) : bar.SMAs != null)
+        {
+            return false;
+        }
         if (date != null ? !date.equals(bar.date) : bar.date != null)
         {
             return false;
@@ -137,23 +153,27 @@ public class Bar
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(lowerBollingerBand);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (SMAs != null ? SMAs.hashCode() : 0);
+        result = 31 * result + (EMAs != null ? EMAs.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString()
     {
-        return "Bar{" +
-                "symbol='" + symbol + '\'' +
-                ", date=" + date +
-                ", open=" + open +
-                ", high=" + high +
-                ", low=" + low +
-                ", close=" + close +
-                ", volume=" + volume +
-                ", upperBollingerBand=" + upperBollingerBand +
-                ", middleBollingerBand=" + middleBollingerBand +
-                ", lowerBollingerBand=" + lowerBollingerBand +
-                '}';
+        return "\n\nBar{" +
+                "\nsymbol='" + symbol + '\'' +
+                ", \n\tdate=" + date +
+                ", \n\topen=" + open +
+                ", \n\thigh=" + high +
+                ", \n\tlow=" + low +
+                ", \n\tclose=" + close +
+                ", \n\tvolume=" + volume +
+                ", \n\tupperBollingerBand=" + upperBollingerBand +
+                ", \n\tmiddleBollingerBand=" + middleBollingerBand +
+                ", \n\tlowerBollingerBand=" + lowerBollingerBand +
+                ", \n\tSMAs=" + SMAs +
+                ", \n\tEMAs=" + EMAs +
+                "\n}";
     }
 }

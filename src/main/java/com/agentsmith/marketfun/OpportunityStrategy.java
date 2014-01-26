@@ -12,4 +12,6 @@ import java.util.List;
 public interface OpportunityStrategy
 {
     boolean isOpportunity(String symbol, List<Bar> bars);
+
+    StrategyWeight getWeight();
 }

@@ -1,9 +1,13 @@
 package com.agentsmith.marketfun;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static com.agentsmith.marketfun.Util.isStable;
+import static com.agentsmith.marketfun.Util.outToUser;
+import static java.lang.String.format;
 
 /**
  * Provides a way to add multiple strategies and check if there's an opportunity to trade a given symbol, based on
@@ -20,15 +24,20 @@ public class OpportunityStrategyContext
 {
     private final TechnicalsFinderOptions options;
 
-    private final List<OpportunityStrategy> strategies;
+    private final Set<OpportunityStrategy> strategies;
 
     public OpportunityStrategyContext(TechnicalsFinderOptions options)
     {
-        this(options, new ArrayList<OpportunityStrategy>());
+        this(options, new TreeSet<>(new Comparator<OpportunityStrategy>() {
+            @Override
+            public int compare(OpportunityStrategy o1, OpportunityStrategy o2)
+            {
+                return o2.getWeight().ordinal() - o1.getWeight().ordinal();
+            }
+        }));
     }
 
-    public OpportunityStrategyContext(TechnicalsFinderOptions options,
-                                      List<OpportunityStrategy> strategies)
+    public OpportunityStrategyContext(TechnicalsFinderOptions options, Set<OpportunityStrategy> strategies)
     {
         this.options = options;
         this.strategies = strategies;
@@ -47,7 +56,18 @@ public class OpportunityStrategyContext
             {
                 return false;
             }
+            outToUser(options, "Found possible opportunity for \"" + symbol + "\" using " +
+                               nextStrategy.getClass().getSimpleName());
         }
-        return isStable(options, bars);
+
+        boolean isStable = isStable(options, bars);
+
+        outToUser(options,
+                  format("All strategies passed and found opportunity for %s%s.",
+                         symbol,
+                         isStable ? " and it is relatively stable."
+                                  : " but it's not very stable so passing on this one."));
+
+        return isStable;
     }
 }

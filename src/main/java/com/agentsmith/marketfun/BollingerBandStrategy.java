@@ -71,6 +71,12 @@ public class BollingerBandStrategy implements OpportunityStrategy
         return false;
     }
 
+    @Override
+    public StrategyWeight getWeight()
+    {
+        return StrategyWeight.MID;
+    }
+
     private boolean isBetweenBollingerBands(boolean evaluatingUpperBand,
                                             List<Bar> lastNBarsBeforePrevDay,
                                             List<Bar> bars,
@@ -100,7 +106,7 @@ public class BollingerBandStrategy implements OpportunityStrategy
     {
         for (int i = 0; i < bollingerBandPeriods; i++)
         {
-            double movingAvg = calcMovingAvg(bars.subList(i, i + bollingerBandPeriods));
+            double movingAvg = calcSimpleMovingAvg(bars.subList(i, i + bollingerBandPeriods));
             double deviation = calcDeviation(bars.subList(i, i + bollingerBandPeriods), movingAvg);
 
             Bar nextBar = bars.get(i);

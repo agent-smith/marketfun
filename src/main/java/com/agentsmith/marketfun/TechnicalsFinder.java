@@ -59,8 +59,9 @@ public class TechnicalsFinder
 
         // TODO: find a way to make a weighted result, instead of all or nothing opportunity
         OpportunityStrategyContext opportunityStrategyCtx = new OpportunityStrategyContext(options);
-        opportunityStrategyCtx.addStrategy(new BollingerBandStrategy(options));
         opportunityStrategyCtx.addStrategy(new SlowStochasticsStrategy(options));
+//        opportunityStrategyCtx.addStrategy(new BollingerBandStrategy(options));
+        opportunityStrategyCtx.addStrategy(new MovingAveragesStrategy(options));
 
         TechnicalsFinder techFinder = new TechnicalsFinder(options);
         Set<String> opportunities = new TreeSet<>(techFinder.findOpportunities(opportunityStrategyCtx));
@@ -173,7 +174,8 @@ public class TechnicalsFinder
                         int lineNum = 1;
                         String line;
                         while ((line = br.readLine()) != null
-                               && (lineNum - 1 < options.bollingerBandPeriods * 2))
+                                && (lineNum - 1 < 1000))  // TODO: figure out what's a reasonable amount of data to collect without getting too crazy.
+//                                && (lineNum - 1 < options.bollingerBandPeriods * 2))
                         {
                             String[] lineArr = line.split(",");
                             String dateStr = lineArr[0].trim();

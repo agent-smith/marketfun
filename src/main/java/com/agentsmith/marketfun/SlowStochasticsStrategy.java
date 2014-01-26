@@ -5,7 +5,7 @@ import java.util.List;
 
 import static com.agentsmith.marketfun.Calc.findHighestHigh;
 import static com.agentsmith.marketfun.Calc.findLowestLow;
-import static com.agentsmith.marketfun.Util.outToUser;
+import static com.agentsmith.marketfun.Util.errToUser;
 
 /**
  * Calculates Slow Stochastics for a set of bars and determines whether the %K is in an upward trend, realtive to the %D,
@@ -34,7 +34,7 @@ public class SlowStochasticsStrategy implements OpportunityStrategy
 
         if (bars.size() < nBarsNeededForCalc)
         {
-            System.err.println("Not enough data to calculate %K for the Slow Stochastic.");
+            errToUser(options, "\nNot enough data to calculate %K for the Slow Stochastic.\n");
             return false;
         }
 
@@ -44,7 +44,7 @@ public class SlowStochasticsStrategy implements OpportunityStrategy
         for (int i = 0; i < options.slowStochKPeriods; i++)
         {
             double nextPercentK = calcStochPercentK(bars.subList(i, options.slowStochKPeriods + i));
-            //outToUser(options, "[" + symbol + "] reg stoch %K[" + i + "] = " + nextPercentK);
+            //errToUser(options, "[" + symbol + "] reg stoch %K[" + i + "] = " + nextPercentK);
             stochPercentKs.add(nextPercentK);
         }
 
@@ -52,14 +52,14 @@ public class SlowStochasticsStrategy implements OpportunityStrategy
         for (int i = 0; i < options.slowStochDPeriods; i++)
         {
             double nextPercentD = calcStochPercentD(stochPercentKs.subList(i, stochPercentKs.size()));
-            //outToUser(options, "[" + symbol + "] reg stoch %D[" + i + "] = " + nextPercentD);
+            //errToUser(options, "[" + symbol + "] reg stoch %D[" + i + "] = " + nextPercentD);
             stochPercentDs.add(nextPercentD);
         }
 
         // Slow Stochastic Calculations
 
         double slowStochPercentK = stochPercentDs.get(0);
-        outToUser(options, "[" + symbol + "] SLOW STOCH %K = " + slowStochPercentK);
+        errToUser(options, "\n[" + symbol + "] SLOW STOCH %K = " + slowStochPercentK);
 
         double slowStochPercentDSum = 0.0;
         for (int i = 0; i < options.slowStochDPeriods; i++)
@@ -68,10 +68,16 @@ public class SlowStochasticsStrategy implements OpportunityStrategy
         }
 
         double slowStochPercentD = slowStochPercentDSum / options.slowStochDPeriods;
-        outToUser(options, "[" + symbol + "] SLOW STOCH %D = " + slowStochPercentD);
+        errToUser(options, "[" + symbol + "] SLOW STOCH %D = " + slowStochPercentD);
 
         return (slowStochPercentK < options.maxSlowStochK)
                 && (slowStochPercentK > slowStochPercentD);
+    }
+
+    @Override
+    public StrategyWeight getWeight()
+    {
+        return StrategyWeight.HIGHEST;
     }
 
     private double calcStochPercentK(List<Bar> kBars)

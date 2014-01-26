@@ -59,6 +59,24 @@ public class Util
             }
         }
 
+        // If the current price is over 10.0, and the price hasn't been moving more than 1.0,
+        // then consider it an opportunity.
+        if (maxHigh - minLow < 1.0 && bars.get(0).close > 10.0)
+        {
+            if (options.debug)
+            {
+                errToUser(options,
+                          "[" + bars.get(0).symbol + "] " +
+                          "(maxHigh - minLow) = (" + maxHigh + " - " + minLow + ") < 1.0 " +
+                          "&& " + bars.get(0).close + " > 10.0, so isStable == true");
+            }
+            return true;
+        }
+
+        // Keep in mind that graphically, the current price is at index 0 in bars.  So, if the bar containing the max
+        // comes after the bar containing the min (e.g. bars[5].close > bars[0].close), then swap them so that the
+        // angle can be compared later with the max always being on the right (relative to a normal line plot as
+        // P1(x,y), P2(x,y), where P1(y) < P2(y)).  Calc.calcAngleOfLineBetweenTwoPoints always assumes this is true.
         if (maxHighIdx > minLowIdx)
         {
             int tmp = maxHighIdx;
@@ -66,19 +84,12 @@ public class Util
             minLowIdx = tmp;
         }
 
-        // If the current price is over 10.0, and the price hasn't been moving more than 1.0,
-        // then consider it an opportunity.
-        if (maxHigh - minLow < 1.0 && bars.get(0).close > 10.0)
-        {
-            return true;
-        }
-
         double highLowAngle = abs(calcAngleOfLineBetweenTwoPoints(new Point(maxHighIdx, maxHigh),
                                                                   new Point(minLowIdx, minLow)));
 
         if (options.debug)
         {
-            System.out.println("[" + bars.get(0).symbol + "] highLowAngle = " + highLowAngle);
+            errToUser(options, "[" + bars.get(0).symbol + "] highLowAngle = " + highLowAngle);
         }
 
         return highLowAngle <= options.maxPriceFluxAngle;
