@@ -116,7 +116,7 @@ public class Util
         }
     }
 
-    public static void emailOpportunitiesIfNec(TechnicalsFinderOptions options, Set<String> opportunities)
+    public static void emailOpportunitiesIfNec(TechnicalsFinderOptions options, String msgBody)
     {
         if (isNotBlank(options.emailAddress))
         {
@@ -143,7 +143,7 @@ public class Util
                 message.setFrom(new InternetAddress("randy31415@gmail.com"));
                 message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
                 message.setSubject("Stock Picks");
-                message.setText("\nPossible opportunities: " + opportunities);
+                message.setText(msgBody);
 
                 outToUser(options, "Trying to send email to: " + toEmail + "...");
 
@@ -157,6 +157,18 @@ public class Util
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public static String prettyPrintResults(TechnicalsFinderOptions options, Set<String> opportunities)
+    {
+        StringBuilder sb = new StringBuilder("\nRan Technicals Finder with the following args:\n");
+        sb.append(options);
+        sb.append("\nPossible opportunities: ");
+        for (String nextOpp : opportunities)
+        {
+            sb.append(nextOpp);
+        }
+        return sb.toString();
     }
 
     public static void outToUser(TechnicalsFinderOptions options, String str)

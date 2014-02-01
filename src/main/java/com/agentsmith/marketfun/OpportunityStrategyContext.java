@@ -63,10 +63,9 @@ public class OpportunityStrategyContext
         boolean isStable = isStable(options, bars);
 
         outToUser(options,
-                  format("All strategies passed and found opportunity for %s%s.",
+                  format("All strategies passed and found opportunity for %s%s the configured maxPriceFluxAngle: %s",
                          symbol,
-                         isStable ? " and it is relatively stable."
-                                  : " but it's not very stable so passing on this one."));
+                         isStable ? " and falls below" : " but it does not fall below", options.maxPriceFluxAngle));
 
         return isStable;
     }

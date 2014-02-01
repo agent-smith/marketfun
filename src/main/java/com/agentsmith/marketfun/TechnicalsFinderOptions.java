@@ -95,4 +95,27 @@ public class TechnicalsFinderOptions
 
     @Parameter(names = "-debug", description = "Debug mode")
     public boolean debug = false;
+
+    @Override
+    public String toString()
+    {
+        return "TechnicalsFinderOptions{" +
+                "\n\temailAddress='" + emailAddress + '\'' +
+                "\n\texchanges=" + exchanges +
+                "\n\tsymbols=" + symbols +
+                "\n\tnumTrendPeriods=" + numTrendPeriods +
+                "\n\tstartDate=" + startDate +
+                "\n\tbollingerBandPeriods=" + bollingerBandPeriods +
+                "\n\tbollingerBandDeviation=" + bollingerBandDeviation +
+                "\n\tslowStochKPeriods=" + slowStochKPeriods +
+                "\n\tslowStochDPeriods=" + slowStochDPeriods +
+                "\n\tmaxSlowStochK=" + maxSlowStochK +
+                "\n\tmaxPriceFluxAngle=" + maxPriceFluxAngle +
+                "\n\tepsilonPercentOfPrice=" + epsilonPercentOfPrice +
+                "\n\tminPrice=" + minPrice +
+                "\n\tminVolume=" + minVolume +
+                "\n\tverbose=" + verbose +
+                "\n\tdebug=" + debug +
+                "\n}";
     }
+}

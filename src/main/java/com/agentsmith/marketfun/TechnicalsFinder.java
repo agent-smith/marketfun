@@ -23,6 +23,7 @@ import static com.agentsmith.marketfun.SymbolFinder.findSymbols;
 import static com.agentsmith.marketfun.Util.emailOpportunitiesIfNec;
 import static com.agentsmith.marketfun.Util.errToUser;
 import static com.agentsmith.marketfun.Util.outToUser;
+import static com.agentsmith.marketfun.Util.prettyPrintResults;
 import static com.agentsmith.marketfun.Util.waitForAllThreadsToComplete;
 
 /**
@@ -57,7 +58,8 @@ public class TechnicalsFinder
     {
         TechnicalsFinderOptions options = createOptionsFrom(args);
 
-        // TODO: find a way to make a weighted result, instead of all or nothing opportunity
+        // TODO: Find a way to make a weighted result, instead of all or nothing opportunity.
+        // TODO: Also, make the strategies configurable so you don't have to comment them out like this.
         OpportunityStrategyContext opportunityStrategyCtx = new OpportunityStrategyContext(options);
         opportunityStrategyCtx.addStrategy(new SlowStochasticsStrategy(options));
 //        opportunityStrategyCtx.addStrategy(new BollingerBandStrategy(options));
@@ -66,9 +68,10 @@ public class TechnicalsFinder
         TechnicalsFinder techFinder = new TechnicalsFinder(options);
         Set<String> opportunities = new TreeSet<>(techFinder.findOpportunities(opportunityStrategyCtx));
 
-        outToUser(options, "\nPossible opportunities: " + opportunities);
+        String resultStr = prettyPrintResults(options, opportunities);
+        outToUser(options, resultStr);
 
-        emailOpportunitiesIfNec(options, opportunities);
+        emailOpportunitiesIfNec(options, resultStr);
     }
 
     private static TechnicalsFinderOptions createOptionsFrom(String... args)
