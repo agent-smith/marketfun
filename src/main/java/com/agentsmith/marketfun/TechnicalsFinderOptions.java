@@ -18,6 +18,12 @@ import java.util.List;
  */
 public class TechnicalsFinderOptions
 {
+    @Parameter(names = { "-strategies" },
+               description = "Comma separated set of specific strategies to run (if not specified, then all " +
+                             "strategies are run).",
+               validateWith = StrategyValidator.class)
+    public List<String> strategies = new ArrayList<>();
+
     @Parameter(names = { "-emailAddress", "-emailAddr", "-email" },
                description = "The email address to send possible opportunities to.",
                validateWith = MyEmailValidator.class)
@@ -102,6 +108,7 @@ public class TechnicalsFinderOptions
         return "TechnicalsFinderOptions{" +
                 "\n\temailAddress='" + emailAddress + '\'' +
                 "\n\texchanges=" + exchanges +
+                "\n\tstrategies=" + strategies +
                 "\n\tsymbols=" + symbols +
                 "\n\tnumTrendPeriods=" + numTrendPeriods +
                 "\n\tstartDate=" + startDate +

@@ -1,4 +1,8 @@
-package com.agentsmith.marketfun;
+package com.agentsmith.marketfun.strategy;
+
+import com.agentsmith.marketfun.Bar;
+import com.agentsmith.marketfun.StrategyWeight;
+import com.agentsmith.marketfun.TechnicalsFinderOptions;
 
 import java.util.List;
 
@@ -9,13 +13,12 @@ import java.util.List;
  * Date: 1/21/2014
  * Time: 23:48
  */
-public class MACDStrategy implements OpportunityStrategy
+@Strategy("MACD")
+public class MACDStrategy extends AbstractOpportunityStrategy
 {
-    private final TechnicalsFinderOptions options;
-
     public MACDStrategy(TechnicalsFinderOptions options)
     {
-        this.options = options;
+        super(options);
     }
 
     @Override

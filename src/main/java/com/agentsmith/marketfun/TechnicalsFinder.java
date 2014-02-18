@@ -1,5 +1,7 @@
 package com.agentsmith.marketfun;
 
+import com.agentsmith.marketfun.strategy.OpportunityStrategy;
+import com.agentsmith.marketfun.strategy.OpportunityStrategyContext;
 import com.beust.jcommander.JCommander;
 import org.apache.commons.lang3.time.StopWatch;
 
@@ -25,6 +27,9 @@ import static com.agentsmith.marketfun.Util.errToUser;
 import static com.agentsmith.marketfun.Util.outToUser;
 import static com.agentsmith.marketfun.Util.prettyPrintResults;
 import static com.agentsmith.marketfun.Util.waitForAllThreadsToComplete;
+import static com.agentsmith.marketfun.strategy.StrategyFactory.createStrategies;
+import static java.lang.Double.parseDouble;
+import static java.lang.Integer.parseInt;
 
 /**
  * Finds trade opportunities based on some set of technical analysis strategies.
@@ -58,14 +63,11 @@ public class TechnicalsFinder
     {
         TechnicalsFinderOptions options = createOptionsFrom(args);
 
-        // TODO: Find a way to make a weighted result, instead of all or nothing opportunity.
-        // TODO: Also, make the strategies configurable so you don't have to comment them out like this.
-        OpportunityStrategyContext opportunityStrategyCtx = new OpportunityStrategyContext(options);
-        opportunityStrategyCtx.addStrategy(new SlowStochasticsStrategy(options));
-//        opportunityStrategyCtx.addStrategy(new BollingerBandStrategy(options));
-        opportunityStrategyCtx.addStrategy(new MovingAveragesStrategy(options));
-
         TechnicalsFinder techFinder = new TechnicalsFinder(options);
+
+        // TODO: Find a way to make a weighted result, instead of all or nothing opportunity.
+        OpportunityStrategyContext opportunityStrategyCtx = getOpportunityStrategyContext(options);
+
         Set<String> opportunities = new TreeSet<>(techFinder.findOpportunities(opportunityStrategyCtx));
 
         String resultStr = prettyPrintResults(options, opportunities);
@@ -79,6 +81,24 @@ public class TechnicalsFinder
         TechnicalsFinderOptions options = new TechnicalsFinderOptions();
         new JCommander(options, args);
         return options;
+    }
+
+    private static OpportunityStrategyContext getOpportunityStrategyContext(TechnicalsFinderOptions options)
+    {
+        OpportunityStrategyContext opportunityStrategyCtx = new OpportunityStrategyContext(options);
+
+        StringBuilder strategyNamesSB = new StringBuilder();
+
+        Set<OpportunityStrategy> strategies = createStrategies(options);
+        for (OpportunityStrategy nextStrategy : strategies)
+        {
+            opportunityStrategyCtx.addStrategy(nextStrategy);
+            strategyNamesSB.append(nextStrategy.getClass().getSimpleName()).append(", ");
+        }
+
+        String strategyNames = strategyNamesSB.toString().substring(0, strategyNamesSB.length() - 2);
+        outToUser(options, "Added " + strategies.size() + " strategies: " + strategyNames);
+        return opportunityStrategyCtx;
     }
 
     private List<String> findOpportunities(final OpportunityStrategyContext opportunityStrategyCtx)
@@ -203,13 +223,7 @@ public class TechnicalsFinder
                                 return false;
                             }
 
-                            double open = Double.parseDouble(lineArr[1]);
-                            double high = Double.parseDouble(lineArr[2]);
-                            double low = Double.parseDouble(lineArr[3]);
-                            double close = Double.parseDouble(lineArr[4]);
-                            int volume = Integer.parseInt(lineArr[5]);
-
-                            Bar bar = new Bar(nextSymbol, date, open, high, low, close, volume);
+                            Bar bar = createBar(nextSymbol, lineArr, date);
                             bars.add(bar);
                             //System.out.println("   Line " + lineNum + ": " + bar);
 
@@ -259,10 +273,23 @@ public class TechnicalsFinder
                     {
                         skippedSymbols.add(symbol);
                         errToUser(options, "\nProblem while creating URL for symbol '" + symbol +
-                                           "', so skipping. Error was: " + e.getMessage() + "\n");
+                                "', so skipping. Error was: " + e.getMessage() + "\n");
                         return null;
                     }
                     return url;
+                }
+
+                /**
+                 */
+                private Bar createBar(String nextSymbol, String[] lineArr, Date date)
+                {
+                    return new Bar(nextSymbol,
+                                   date,
+                                   parseDouble(lineArr[1]),
+                                   parseDouble(lineArr[2]),
+                                   parseDouble(lineArr[3]),
+                                   parseDouble(lineArr[4]),
+                                   parseInt(lineArr[5]));
                 }
             });
         }

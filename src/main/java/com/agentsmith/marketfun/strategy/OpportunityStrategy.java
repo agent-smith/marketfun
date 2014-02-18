@@ -1,4 +1,7 @@
-package com.agentsmith.marketfun;
+package com.agentsmith.marketfun.strategy;
+
+import com.agentsmith.marketfun.Bar;
+import com.agentsmith.marketfun.StrategyWeight;
 
 import java.util.List;
 

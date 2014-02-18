@@ -1,4 +1,8 @@
-package com.agentsmith.marketfun;
+package com.agentsmith.marketfun.strategy;
+
+import com.agentsmith.marketfun.Bar;
+import com.agentsmith.marketfun.StrategyWeight;
+import com.agentsmith.marketfun.TechnicalsFinderOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +22,12 @@ import static com.agentsmith.marketfun.Util.errToUser;
  * Date: 1/16/2014
  * Time: 22:14
  */
-public class SlowStochasticsStrategy implements OpportunityStrategy
+@Strategy("SlowStochastics")
+public class SlowStochasticsStrategy extends AbstractOpportunityStrategy
 {
-    private final TechnicalsFinderOptions options;
-
     public SlowStochasticsStrategy(TechnicalsFinderOptions options)
     {
-        this.options = options;
+        super(options);
     }
 
     @Override

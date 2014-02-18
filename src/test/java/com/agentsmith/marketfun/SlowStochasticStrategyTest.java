@@ -1,5 +1,6 @@
 package com.agentsmith.marketfun;
 
+import com.agentsmith.marketfun.strategy.SlowStochasticsStrategy;
 import org.junit.Test;
 
 import java.util.ArrayList;

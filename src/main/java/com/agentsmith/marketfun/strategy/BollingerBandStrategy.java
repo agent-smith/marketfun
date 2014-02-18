@@ -1,4 +1,8 @@
-package com.agentsmith.marketfun;
+package com.agentsmith.marketfun.strategy;
+
+import com.agentsmith.marketfun.Bar;
+import com.agentsmith.marketfun.StrategyWeight;
+import com.agentsmith.marketfun.TechnicalsFinderOptions;
 
 import java.util.List;
 
@@ -17,13 +21,12 @@ import static com.agentsmith.marketfun.Util.outToUser;
  * Date: 12/15/2013
  * Time: 00:10
  */
-public class BollingerBandStrategy implements OpportunityStrategy
+@Strategy("BollingerBand")
+public class BollingerBandStrategy extends AbstractOpportunityStrategy
 {
-    private final TechnicalsFinderOptions options;
-
     public BollingerBandStrategy(TechnicalsFinderOptions options)
     {
-        this.options = options;
+        super(options);
     }
 
     @Override

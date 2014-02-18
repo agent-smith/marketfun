@@ -1,4 +1,7 @@
-package com.agentsmith.marketfun;
+package com.agentsmith.marketfun.strategy;
+
+import com.agentsmith.marketfun.Bar;
+import com.agentsmith.marketfun.TechnicalsFinderOptions;
 
 import java.util.Comparator;
 import java.util.List;

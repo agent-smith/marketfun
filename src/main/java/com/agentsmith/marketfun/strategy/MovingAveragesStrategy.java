@@ -1,4 +1,8 @@
-package com.agentsmith.marketfun;
+package com.agentsmith.marketfun.strategy;
+
+import com.agentsmith.marketfun.Bar;
+import com.agentsmith.marketfun.StrategyWeight;
+import com.agentsmith.marketfun.TechnicalsFinderOptions;
 
 import java.util.List;
 
@@ -13,13 +17,12 @@ import static com.agentsmith.marketfun.Util.errToUser;
  * Date: 1/21/2014
  * Time: 23:48
  */
-public class MovingAveragesStrategy implements OpportunityStrategy
+@Strategy("MovingAverages")
+public class MovingAveragesStrategy extends AbstractOpportunityStrategy
 {
-    private final TechnicalsFinderOptions options;
-
     public MovingAveragesStrategy(TechnicalsFinderOptions options)
     {
-        this.options = options;
+        super(options);
     }
 
     @Override

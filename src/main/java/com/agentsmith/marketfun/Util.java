@@ -163,10 +163,10 @@ public class Util
     {
         StringBuilder sb = new StringBuilder("\nRan Technicals Finder with the following args:\n");
         sb.append(options);
-        sb.append("\nPossible opportunities: ");
+        sb.append("\n\nPossible opportunities:\n");
         for (String nextOpp : opportunities)
         {
-            sb.append(nextOpp);
+            sb.append(nextOpp).append("\n");
         }
         return sb.toString();
     }
